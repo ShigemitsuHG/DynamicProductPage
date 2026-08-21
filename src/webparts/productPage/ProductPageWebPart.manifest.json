@@ -1,0 +1,25 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "5290edc3-af85-4bd8-9478-2ff7d3dda7c3",
+  "alias": "ProductPageWebPart",
+  "componentType": "WebPart",
+
+  "version": "*",
+  "manifestVersion": 2,
+
+  "requiresCustomScript": false,
+  "supportedHosts": ["SharePointWebPart", "TeamsPersonalApp", "TeamsTab", "SharePointFullPage"],
+  "supportsThemeVariants": true,
+
+  "preconfiguredEntries": [{
+    "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+    "group": { "default": "Advanced" },
+    "title": { "default": "商品ページ" },
+    "description": { "default": "指定商品の情報を表示します。URLパラメータで指定 productCode=10100001" },
+    "officeFabricIconFontName": "Page",
+    "properties": {
+      "description": "product_page",
+      "fields": "Features,Maker_voice,Price,Shops,ExDate,Allergy,Alcohol,Storage_type,Picture,CakeCut,Topping,Question,Point,Materials,Glossary"
+    }
+  }]
+}

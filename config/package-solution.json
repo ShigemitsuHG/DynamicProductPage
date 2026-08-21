@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "dynamic-product-page-client-side-solution",
+    "id": "16f88453-6b93-4cf2-bfab-4ca98e7403a7",
+    "version": "1.0.0.11",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": false,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.20.0"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "dynamic-product-page description"
+      },
+      "longDescription": {
+        "default": "dynamic-product-page description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "dynamic-product-page Feature",
+        "description": "The feature that activates elements of the dynamic-product-page solution.",
+        "id": "cddc009a-7166-461c-946a-5753aa0e1e63",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/dynamic-product-page.sppkg"
+  }
+}
