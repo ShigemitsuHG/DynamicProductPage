@@ -697,13 +697,24 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
       );
       console.log("id",id);
       console.log("filtered:", filtered);
+
       //半製品名をキーにしてキー付きリストに代入
       const groupedData = filtered.reduce<Record<string, Item_Main[]>>(
-        //acc=配列　item=1件ずつのデータ
         (acc, item) => {
           const key = item.Name || "未分類";
-          if (!acc[key]) acc[key] = [];
-          acc[key].push(item);
+          if (!acc[key]) {
+            acc[key] = [];
+          }
+
+          // 現在のグループ（acc[key]）の中に、同じ MaterialName と Origin の組み合わせがすでに存在するかチェック
+          const isDuplicate = acc[key].some(
+            (existing: Item_Main) => `${existing.MaterialName}_${existing.Origin}` === `${item.MaterialName}_${item.Origin}`
+          );
+
+          // 存在しない場合のみ、そのグループに追加する
+          if (!isDuplicate) {
+            acc[key].push(item);
+          }
           return acc;
         },
         {}
