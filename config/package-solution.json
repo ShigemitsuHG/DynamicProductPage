@@ -3,7 +3,7 @@
   "solution": {
     "name": "dynamic-product-page-client-side-solution",
     "id": "16f88453-6b93-4cf2-bfab-4ca98e7403a7",
-    "version": "1.0.0.11",
+    "version": "1.0.0.12",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": false,
     "isDomainIsolated": false,

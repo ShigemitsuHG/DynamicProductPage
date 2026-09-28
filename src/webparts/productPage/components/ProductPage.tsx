@@ -46,21 +46,25 @@ export interface IProduct {
   ProductDesc: string;
 }
 type GroupedItem = {
-  semiProduct: string;
+  semiProductName: string;
   materials: Item_Main[];
+  sortName: string;
 };
 export interface Item_Main{
   Name: string;//リストから
   MaterialId: number;//リストから
   ProductCodeId : number[];//リストから
+  SortName : string;//リストから
   MaterialName: string;
   Origin: string;
+  SemiProduct:boolean;
   // ProductCode: ProductCodeLookup[];
 }
 export interface Item_Material{
   ID: number;//リストから
   Name: string;//リストから
   OriginOrProcessingPlace: string//リストから
+  SemiProduct: boolean;
 }
 export interface Item_Glossary{
   ProductCodeId : number[];//リストから
@@ -420,9 +424,9 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
                   <span>産地または加工地</span>
                 </li>
                 {this.state.grouped.map(group => (
-                  <div key={group.semiProduct}>
+                  <div key={group.semiProductName}>
                     <h3 style={{paddingLeft:"20px"}}>
-                      {group.semiProduct}
+                      {group.semiProductName}
                     </h3>
                     <ul style={{ listStyle: "none", padding: 0,  paddingLeft: "30px" }}>
 
@@ -436,8 +440,13 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
                             padding: "4px 0"
                           }}
                         >
-                          <span>{item.MaterialName}</span>
-                          <span>{item.Origin}</span>
+                          <span style={{fontWeight: item.SemiProduct? "bold":"normal"}}>
+                            {item.MaterialName}
+                          </span>
+                          <span style={{ color: item.SemiProduct ? 'blue' : '#000' }}>
+                            {item.Origin}
+                          </span>
+
                         </li>
                       ))}
                     </ul>
@@ -645,17 +654,18 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
   //原材料データセット
   //id 商品マスタの商品id(内部id)
   private async loadData_Material(id : number, productCode: any) {
+    console.log("id:",id);
     console.log("原材料データ.start code:", productCode);
     console.log("原材料データID:",this.state.product?.Id);
 
     try {
-      const data : Item_Main[]  = await this.sp.web.lists
+      const allItemData : Item_Main[]  = await this.sp.web.lists
         .getByTitle(this.props.listName_Main)
         .items
         // .filter(`substringof('${productCode}', ProductCode)`)
         // .filter(`ProductCode eq '${productCode}'`)
         .top(5000)();
-      console.log("Item_Main:",data);
+      console.log("Item_Main:",allItemData);
       const materials : Item_Material[]  = await this.sp.web.lists
         .getByTitle(this.props.listName_Material)
         .items
@@ -663,27 +673,29 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
       console.log("Item_Material:",materials);
       // console.log("材料取得" , JSON.stringify(materials));
       //Map化（高速化）
-      const materialMap: { [key: number]: any } = {};
-      materials.forEach(m => {
-        materialMap[m.ID] = m;
+      const materialMap: { [key: number]: Item_Material } = {};
+        materials.forEach(m => {
+          materialMap[m.ID] = m;
       });
-      console.log("Map化");
+      console.log("Map化",materialMap);
 
-      const enriched = data.map(item => {
+      const enriched = allItemData.map(item => {
         const material = materialMap[item.MaterialId];
-
+        // console.log("material:",item.MaterialId,item.Name,  material);
         return {
           ...item, // 元データをコピー
           MaterialName: material?.Name,
-          Origin: material?.OriginOrProcessingPlace
+          Origin: material?.OriginOrProcessingPlace,
+          SemiProduct: material?.SemiProduct
         };
       });
-
+      console.log("enriched:", enriched);
       // ✅ 「含まれている」条件
       const filtered = enriched.filter(item =>
         // item.ProductCode?.some(pc => pc.Title === productCode)
         item.ProductCodeId?.indexOf(id) !== -1
       );
+      console.log("id",id);
       console.log("filtered:", filtered);
       //半製品名をキーにしてキー付きリストに代入
       const groupedData = filtered.reduce<Record<string, Item_Main[]>>(
@@ -697,14 +709,21 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
         {}
       );
       console.log("groupedData:", groupedData);
+      // 各グループ内を SortName 順に並び替え
+      Object.keys(groupedData).forEach(key => {
+        groupedData[key].sort((a, b) =>
+          (a.SortName || "").localeCompare(b.SortName || "", "ja")
+        );
+      });
       //キー付きリストからGroupedItem[]の配列に変換
       const result :GroupedItem[] = Object.keys(groupedData)
         // .sort((a:GroupedItem,b:GroupedItem) => a.semiProduct.localeCompare(b.semiProduct))
         .map(key => ({
-          semiProduct: key,
-          materials: groupedData[key]
+          semiProductName: key,
+          materials: groupedData[key],
+          sortName: groupedData[key]?.[0]?.SortName
       }))
-      .sort((a:GroupedItem,b:GroupedItem) => a.semiProduct.localeCompare(b.semiProduct))
+      .sort((a:GroupedItem,b:GroupedItem) => a.sortName.localeCompare(b.sortName))
       ;
       console.log("result:", result);
       // ✅ state更新
