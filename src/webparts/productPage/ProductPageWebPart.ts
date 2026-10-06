@@ -283,7 +283,7 @@ export default class ProductPageWebPart extends BaseClientSideWebPart<IProductPa
                   // description: 'Name,Material[参照],Product[複数参照]',
                   placeholder:'リスト名を指定'
                 }),
-                PropertyPaneLabel('', {text: 'FAQ'}),
+                PropertyPaneLabel('', {text: '▼FAQ'}),
                 PropertyPaneTextField('listName_FAQ', {
                   placeholder:'リスト名を指定'
                 }),

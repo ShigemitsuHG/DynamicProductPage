@@ -5,6 +5,7 @@
   padding: 1em;
   color: "[theme:bodyText, default: #323130]";
   color: var(--bodyText);
+  font-family: inherit ;
   &.teams {
     font-family: $ms-font-family-fallbacks;
   }
@@ -29,6 +30,17 @@
       text-decoration: underline;
       color: "[theme:linkHovered, default: #014446]";
       color: var(--linkHovered); // note: CSS Custom Properties support is limited to modern browsers only
+    }
+  }
+}
+.container {
+  /* 親要素自身にSharePointのフォントを継承 */
+  font-family: inherit;
+
+  /* 内部に生成・挿入されるすべての要素に強制継承 */
+  :global {
+    * {
+      font-family: inherit !important;
     }
   }
 }

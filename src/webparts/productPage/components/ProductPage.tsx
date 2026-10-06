@@ -3,6 +3,7 @@ import type { IProductPageProps } from './IProductPageProps';
 // import { FontSizes } from '@fluentui/react';
 // import { useState, useEffect } from "react"
 // import strings from 'ProductPageWebPartStrings';
+import styles from './ProductPage.module.scss';
 
 import { spfi, SPFx } from "@pnp/sp"
 import "@pnp/sp/webs";
@@ -144,7 +145,7 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
     document.title=this.state.product?.ProductName ?? "";
     return (
 
-      <div style={{width: "100%"}}>
+      <div className={styles.container} style={{ width: "100%"}}>
         
         <div style={{ display: "flex"}}>
           <div style={{ width: "50%" ,paddingRight:"30px"}}>
@@ -160,17 +161,17 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
                 <h2 style={{ fontSize: "18px", fontWeight: "bold" }}>
                     {this.state.product?.ProductDescTitle ?? "商品説明"}：
                 </h2>
-                <pre style={{ fontSize: "18px", whiteSpace: "pre-line" }}>
+                <pre style= {{ fontSize: "18px",fontWeight: "normal", whiteSpace: "pre-line" }}>
                   {this.state.product?.ProductDesc}
                 </pre>
               </>
             )}            
             {this.props.showFeatures && this.state.product?.Features && (
               <>
-                <h2 style={{ fontSize: "18px", fontWeight: "bold" }}>
+                <h2 style={{fontSize: "18px", fontWeight: "bold" }}>
                   商品特徴：
                 </h2>
-                <pre style={{ fontSize: "18px", whiteSpace: "pre-line" }}>
+                <pre style={{fontSize: "18px",fontWeight: "normal",whiteSpace: "pre-line" }}>
                   {this.state.product?.Features}
                 </pre>
               </>
@@ -188,8 +189,9 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
             {this.props.showPrice && this.state.product?.Price &&(
               <>
                 <h2 style={{fontSize:"18px",fontWeight: "bold"}}>
-                  価格：
+                  価格(税込)：
                 </h2>
+
                 <pre style={{ fontSize: "18px", fontWeight: "normal", whiteSpace: "pre-line" }}>
                   {this.state.product?.Price}
                 </pre>
