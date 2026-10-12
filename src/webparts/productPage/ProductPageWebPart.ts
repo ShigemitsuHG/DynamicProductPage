@@ -47,6 +47,9 @@ export interface IProductPageWebPartProps {
   listName_Master: string;
   listName_Glossary: string;
   listName_FAQ: string;
+  showCallName: boolean;
+  textAlcohol: string;
+  showPicture2: boolean;
 }
 
 
@@ -102,7 +105,10 @@ export default class ProductPageWebPart extends BaseClientSideWebPart<IProductPa
         listName_Material: this.properties.listName_Material,
         listName_Master: this.properties.listName_Master,
         listName_Glossary: this.properties.listName_Glossary,
-        listName_FAQ: this.properties.listName_FAQ
+        listName_FAQ: this.properties.listName_FAQ,
+        showCallName: this.properties.showCallName,
+        textAlcohol: this.properties.textAlcohol,
+        showPicture2: this.properties.showPicture2
       }
     );
     
@@ -139,6 +145,9 @@ export default class ProductPageWebPart extends BaseClientSideWebPart<IProductPa
     if (this.properties.listName_Master === undefined){this.properties.listName_Master = "商品マスタ"}
     if (this.properties.listName_Glossary === undefined){this.properties.listName_Glossary = "用語解説と材料特徴"}
     if (this.properties.listName_FAQ === undefined){this.properties.listName_FAQ = "FAQ"}
+    if (this.properties.showCallName === undefined){this.properties.showCallName = false}
+    if (this.properties.textAlcohol === undefined){this.properties.textAlcohol = "洋酒の種類"}
+    if (this.properties.showPicture2 === undefined){this.properties.showPicture2 = false}
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
     });
@@ -221,6 +230,7 @@ export default class ProductPageWebPart extends BaseClientSideWebPart<IProductPa
               groupName: '表示項目の設定',
               groupFields: [
                 PropertyPaneCheckbox('showProductName', {text: '商品名'}),
+                PropertyPaneCheckbox('showCallName', { text: 'コール名(スタッフ間呼称)'}),
                 PropertyPaneCheckbox('showProductDesc', {text: '商品説明*'}),
                 PropertyPaneCheckbox('showFeatures', {text: '商品特徴*'}),
                 PropertyPaneCheckbox('showMaker_voice', {text: '製造者の声*'}),
@@ -231,8 +241,10 @@ export default class ProductPageWebPart extends BaseClientSideWebPart<IProductPa
                 PropertyPaneCheckbox('showAllergy', {text: '特定原材料'}),
                 PropertyPaneCheckbox('showAlcohol', {text: 'アルコール含有量'}),
                 PropertyPaneCheckbox('showAlcoholName', {text: '洋酒の種類'}),
+                PropertyPaneTextField('textAlcohol', {placeholder: 'アルコール'}),
                 PropertyPaneCheckbox('showStorage_type', {text: '保存方法*'}),
                 PropertyPaneCheckbox('showPicture', {text: '画像'}),
+                PropertyPaneCheckbox('showPicture2', {text: 'その他画像'}),
                 PropertyPaneCheckbox('showCakeCut', {text: 'ケーキカットのコツ'}),
                 PropertyPaneCheckbox('showTopping', {text: 'トッピング'}),
                 PropertyPaneCheckbox('showRemoved', {text: '抜ける食材'}),

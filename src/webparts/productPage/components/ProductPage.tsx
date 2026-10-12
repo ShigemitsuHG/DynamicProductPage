@@ -19,6 +19,15 @@ interface IProductPageState {
   grouped: GroupedItem[];
   glossaryItems: any;
   faqItems: IFaq[];
+  imageList: IImageItem[];
+}
+export interface IImageItem {
+  Id: number;
+  Title?: string;
+  Text:string;
+  AttachmentFiles: IAttachmentFile[];//Image列が格納される添付ファイル
+  ProductPictureURL: string; // 画像の完全パス (例: https://example.com/sites/xxx/Images/pic.jpg)
+
 }
 export interface IProduct {
   Id: number;
@@ -45,6 +54,9 @@ export interface IProduct {
   Shiage: string;
   ProductDescTitle: string;
   ProductDesc: string;
+  CallName: string;
+  showPicture2: boolean;
+  PicturesId: number[]; // その他画像のIDリスト
 }
 type GroupedItem = {
   semiProductName: string;
@@ -144,9 +156,7 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
     }
     document.title=this.state.product?.ProductName ?? "";
     return (
-
       <div className={styles.container} style={{ width: "100%"}}>
-        
         <div style={{ display: "flex"}}>
           <div style={{ width: "50%" ,paddingRight:"30px"}}>
             <h2 style={{fontSize:"24px",fontWeight: "bold"}}>
@@ -156,6 +166,11 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
                 )
               }
             </h2>
+            {this.props.showCallName && (
+              <h2 style={{ fontSize: "20px", fontWeight: "bold" }}>
+                {this.state.product?.CallName ?? "呼び名"}
+              </h2>
+            )}
             {this.props.showProductDesc && this.state.product?.ProductDesc && (
               <>
                 <h2 style={{ fontSize: "18px", fontWeight: "bold" }}>
@@ -278,7 +293,7 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
             {this.props.showAlcoholName && (
               <>
                 <h2 style={{fontSize:"18px",fontWeight: "bold"}}>
-                  洋酒の種類：
+                  {this.props.textAlcohol ?? "洋酒の種類"}：
                  <pre style={{ fontSize: "18px", fontWeight: "normal", whiteSpace: "pre-line"}}>
                     {this.state.product?.Alcohol}
                   </pre>
@@ -307,8 +322,28 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
               <>
                 <div>
                   {this.state.product?.ProductPictureURL && (
-                    <img src={this.state.product?.ProductPictureURL} style={{ width: "100%" }} />
+                    <img src={this.state.product?.ProductPictureURL} 
+                          style={{ 
+                            marginTop: '16px',
+                            display: 'block',
+                            width: "100%" 
+                          }} 
+                    />
                   )}
+                </div>
+              </>
+            )}
+            {this.props.showPicture2 && this.state.imageList.length > 0 && (
+              <>
+                <div>
+                  {this.state.imageList.map((image, index) => (
+                    <div>
+                      <h3 style={{fontSize:"18px",fontWeight: "bold"}}>
+                        {image?.Text}
+                      </h3>
+                      <img key={index} src={image.ProductPictureURL} style={{ width: "100%" }} />
+                      </div>
+                  ))}
                 </div>
               </>
             )}
@@ -509,13 +544,15 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
       product: null,
       grouped: [],
       glossaryItems:[],
-      faqItems:[]
+      faqItems:[],
+      imageList: []
     };
     // ✅ sp初期化
     this.sp = spfi("https://shigemitsu365.sharepoint.com/sites/products")
       .using(SPFx(this.props.context));
   }
 
+  
   public componentDidMount(): void {
 
     this.initial();
@@ -586,10 +623,16 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
         if (file.FileName === imageInfo.fileName) {
           attachment = file;
           const absoluteUrl =`${window.location.origin}${attachment?.ServerRelativeUrl ?? ""}`;
+          console.log("attachment",attachment?.ServerRelativeUrl ?? "undefined");
+          console.log("absoluteUrl",absoluteUrl);
           data.ProductPictureURL=absoluteUrl;
           break;
         }
       }
+      //文字サイズを削除する処理を追加（親要素のCSSで文字サイズを指定するため）
+      const cleanHtml = data.CakeCut?.replace(/font-size\s*&#58;\s*[^;"]+;?/gi, "");
+      data.CakeCut = cleanHtml ?? data.CakeCut;
+      this.setImagesByIds(data.PicturesId?data.PicturesId:[]);
       console.log("masterData:",data);
       console.log("PictureURL",data.ProductPictureURL);
       console.log("PageLink",data.ProductPage?.Url);
@@ -747,5 +790,61 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
       console.error("ERROR:", e);
     }
   }
+  private async setImagesByIds(pictureIds: number[]) {
+    // 配列が空の場合は無駄なリクエストを防ぐため空配列を返す
+    if (!pictureIds || pictureIds.length === 0) {
+      return [];
+    }
+
+    // 例: "Id eq 1 or Id eq 2" を作成
+    const filterQuery = pictureIds.map(id => `Id eq ${id}`).join(" or ");
+
+    // const images = await this.sp.web.lists.getByTitle("画像ライブラリ").items
+    //   .filter(filterQuery)
+    //   // .select("Id", "FileRef", "FileLeafRef", "Title")();
+    //   .select("Id", "FileRef", "FileLeafRef", "Title","Text")();
+    // console.log("Fetched images:", images);
+    // images.map((image : IImageItem) => {
+    //   const absoluteUrl =`${window.location.origin}${image?.FileRef ?? ""}`;
+    //   console.log("image.FileRef", image?.FileRef ?? "undefined");
+      
+    //   image.ProductPictureURL=absoluteUrl;
+    //   console.log("ProductPictureURL",image.ProductPictureURL);
+    // })
+    // AttachmentFiles を select & expand して取得
+    console.log("Fetching images with filter:", filterQuery);
+    const images : IImageItem[] = await this.sp.web.lists.getByTitle("画像ライブラリ").items
+      .select(
+        "Id",
+        "Title",
+        "Text",
+        "AttachmentFiles/FileName",
+        "AttachmentFiles/ServerRelativeUrl"
+      )
+      .expand("AttachmentFiles")
+      .filter(filterQuery)();
+
+    console.log("Fetched images:", images);
+
+    // 2. URL の生成
+    images.forEach((item: IImageItem) => {
+      // アイテムに添付ファイルが存在する場合
+      if (item.AttachmentFiles && item.AttachmentFiles.length > 0) {
+        // 最初の添付ファイルを取得（複数ある場合はループ等で処理）
+        const firstAttachment = item.AttachmentFiles[0];
+        const serverRelativeUrl = firstAttachment.ServerRelativeUrl; // 例: /sites/xxx/Lists/リスト名/Attachments/1/sample.jpg
+        // window.location.origin と結合（日本語・スペースが含まれる場合を考慮して encodeURI）
+        item.ProductPictureURL = `${window.location.origin}${encodeURI(serverRelativeUrl)}`;
+      } else {
+        item.ProductPictureURL = "";
+      }
+
+      console.log("ProductPictureURL:", item.ProductPictureURL);
+    });
+
+    this.setState({
+      imageList: images as IImageItem[] 
+    });
+}
 
 }

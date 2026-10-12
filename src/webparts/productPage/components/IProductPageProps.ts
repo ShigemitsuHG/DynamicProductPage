@@ -32,6 +32,9 @@ export interface IProductPageProps {
   listName_Master: string;
   listName_Glossary: string;
   listName_FAQ: string;
+  showCallName: boolean;
+  textAlcohol: string;
+  showPicture2: boolean;
 }
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 
