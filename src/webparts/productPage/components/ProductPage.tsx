@@ -159,7 +159,7 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
     return (
       <div className={styles.container} style={{ width: "100%"}}>
         <div style={{ display: "flex"}}>
-          <div style={{ width: "50%" ,paddingRight:"30px"}}>
+          <div style={{ width: this.props.showMaterials? "50%":"100%" ,paddingRight:"30px"}}>
             <h2 style={{fontSize:"24px",fontWeight: "bold"}}>
               {
                 this.state.product?.NewProduct ? (
@@ -448,7 +448,7 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
               </>
             )}
           </div>
-          <div style={{ width: "50%" }}>
+          <div style={{ width: this.props.showMaterials? "50%":"0%" }}>
             {this.props.showMaterials && (
               <>
                 <h2 style={{fontSize:"20px",fontWeight: "bold"}}>
@@ -487,7 +487,9 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
                             {item.MaterialName}
                           </span>
                           <span style={{ color: item.SemiProduct ? 'blue' : '#000' }}>
-                            {item.Origin}
+                            {(!item.SemiProduct || this.props.showSemiProComment) && (
+                              item.Origin
+                            )}
                           </span>
 
                         </li>

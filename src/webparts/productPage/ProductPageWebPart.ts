@@ -51,6 +51,7 @@ export interface IProductPageWebPartProps {
   showCallName: boolean;
   textAlcohol: string;
   showPicture2: boolean;
+  showSemiProComment: boolean;
 }
 
 
@@ -110,7 +111,8 @@ export default class ProductPageWebPart extends BaseClientSideWebPart<IProductPa
         listName_FAQ: this.properties.listName_FAQ,
         showCallName: this.properties.showCallName,
         textAlcohol: this.properties.textAlcohol,
-        showPicture2: this.properties.showPicture2
+        showPicture2: this.properties.showPicture2,
+        showSemiProComment: this.properties.showSemiProComment
       }
     );
     
@@ -151,6 +153,7 @@ export default class ProductPageWebPart extends BaseClientSideWebPart<IProductPa
     if (this.properties.showCallName === undefined){this.properties.showCallName = false}
     if (this.properties.textAlcohol === undefined){this.properties.textAlcohol = "洋酒の種類"}
     if (this.properties.showPicture2 === undefined){this.properties.showPicture2 = false}
+    if (this.properties.showSemiProComment === undefined){this.properties.showSemiProComment = true} 
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
     });
@@ -256,6 +259,7 @@ export default class ProductPageWebPart extends BaseClientSideWebPart<IProductPa
                 PropertyPaneCheckbox('showQuestion', {text: 'FAQ'}),
                 PropertyPaneCheckbox('showPoint', {text: 'Point*'}),
                 PropertyPaneCheckbox('showMaterials', {text: '原材料リスト'}),
+                PropertyPaneCheckbox('showSemiProComment', {text: '半製品の項目に産地のコメントを表示'}),
                 PropertyPaneCheckbox('showGlossary', {text: '用語解説'}),
                 PropertyPaneLabel('note', {text: '※はデータがある時のみ表示'})
                 // PropertyPaneChoiceGroup('activelist', {
