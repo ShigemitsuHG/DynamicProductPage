@@ -36,6 +36,7 @@ export interface IProductPageWebPartProps {
   showPicture: boolean;
   showCakeCut: boolean;
   showTopping: boolean;
+  textTopping:string;
   showQuestion: boolean;
   showPoint: boolean;
   showMaterials: boolean;
@@ -95,6 +96,7 @@ export default class ProductPageWebPart extends BaseClientSideWebPart<IProductPa
         showPicture: this.properties.showPicture,
         showCakeCut: this.properties.showCakeCut,
         showTopping: this.properties.showTopping,
+        textTopping: this.properties.textTopping,
         showQuestion: this.properties.showQuestion,
         showPoint: this.properties.showPoint,
         showMaterials: this.properties.showMaterials,
@@ -134,6 +136,7 @@ export default class ProductPageWebPart extends BaseClientSideWebPart<IProductPa
     if (this.properties.showPicture === undefined) {this.properties.showPicture = true}
     if (this.properties.showCakeCut === undefined) {this.properties.showCakeCut = true}
     if (this.properties.showTopping === undefined) {this.properties.showTopping = true}
+    if (this.properties.textTopping === undefined) {this.properties.textTopping = "トッピング"}
     if (this.properties.showQuestion === undefined) {this.properties.showQuestion = true}
     if (this.properties.showPoint === undefined) {this.properties.showPoint = true}
     if (this.properties.showMaterials === undefined) {this.properties.showMaterials = true}
@@ -245,12 +248,13 @@ export default class ProductPageWebPart extends BaseClientSideWebPart<IProductPa
                 PropertyPaneCheckbox('showStorage_type', {text: '保存方法*'}),
                 PropertyPaneCheckbox('showPicture', {text: '画像'}),
                 PropertyPaneCheckbox('showPicture2', {text: 'その他画像'}),
-                PropertyPaneCheckbox('showCakeCut', {text: 'ケーキカットのコツ'}),
-                PropertyPaneCheckbox('showTopping', {text: 'トッピング'}),
+                PropertyPaneCheckbox('showCakeCut', {text: 'ケーキカットのコツ*'}),
+                PropertyPaneCheckbox('showTopping', {text: 'トッピング*'}),
+                PropertyPaneTextField('textTopping', {placeholder: 'トッピングの仕方'}),
                 PropertyPaneCheckbox('showRemoved', {text: '抜ける食材'}),
                 PropertyPaneCheckbox('showShiage', {text: '仕上げ'}),
                 PropertyPaneCheckbox('showQuestion', {text: 'FAQ'}),
-                PropertyPaneCheckbox('showPoint', {text: 'Point'}),
+                PropertyPaneCheckbox('showPoint', {text: 'Point*'}),
                 PropertyPaneCheckbox('showMaterials', {text: '原材料リスト'}),
                 PropertyPaneCheckbox('showGlossary', {text: '用語解説'}),
                 PropertyPaneLabel('note', {text: '※はデータがある時のみ表示'})

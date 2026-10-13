@@ -57,6 +57,7 @@ export interface IProduct {
   CallName: string;
   showPicture2: boolean;
   PicturesId: number[]; // その他画像のIDリスト
+  NewProduct: boolean; // 新商品かどうかのフラグ
 }
 type GroupedItem = {
   semiProductName: string;
@@ -160,6 +161,11 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
         <div style={{ display: "flex"}}>
           <div style={{ width: "50%" ,paddingRight:"30px"}}>
             <h2 style={{fontSize:"24px",fontWeight: "bold"}}>
+              {
+                this.state.product?.NewProduct ? (
+                  <span style={{ color: "rgb(232, 17, 35)" }}>NEW</span>
+                ) : null
+              }
               {
                 this.props.showProductName &&(
                   this.state.product?.ProductName
@@ -347,7 +353,7 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
                 </div>
               </>
             )}
-            {this.props.showCakeCut && (
+            {this.props.showCakeCut && this.state.product?.CakeCut && (
               <>
                 {/* <h2 style={{fontSize:"18px",fontWeight: "bold"}}>
                   ケーキカットのコツ：
@@ -366,10 +372,10 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
                   />
               </>
             )}
-            {this.props.showTopping && (
+            {this.props.showTopping && this.state.product?.Toping && (
               <>
                 <h2 style={{fontSize:"18px",fontWeight: "bold"}}>
-                  トッピングの仕方：
+                  {this.props.textTopping ?? "トッピングの仕方"}：
                   {console.log("VideoURL:"+this.state.product?.Toping)}
                   {this.state.product?.Toping && (
                       <video width="100%" controls>
@@ -431,7 +437,7 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
                 ))}
               </>
             )}
-            {this.props.showPoint && (
+            {this.props.showPoint && this.state.product?.Point && (
               <>
                 <h2 style={{fontSize:"18px",fontWeight: "bold"}}>
                   Point：

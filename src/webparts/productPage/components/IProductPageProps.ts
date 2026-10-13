@@ -21,6 +21,7 @@ export interface IProductPageProps {
   showPicture: boolean;
   showCakeCut: boolean;
   showTopping: boolean;
+  textTopping: string;
   showQuestion: boolean;
   showPoint: boolean;
   showMaterials: boolean;
