@@ -52,6 +52,7 @@ export interface IProductPageWebPartProps {
   textAlcohol: string;
   showPicture2: boolean;
   showSemiProComment: boolean;
+  showMovies:boolean;
 }
 
 
@@ -112,7 +113,8 @@ export default class ProductPageWebPart extends BaseClientSideWebPart<IProductPa
         showCallName: this.properties.showCallName,
         textAlcohol: this.properties.textAlcohol,
         showPicture2: this.properties.showPicture2,
-        showSemiProComment: this.properties.showSemiProComment
+        showSemiProComment: this.properties.showSemiProComment,
+        showMovies:this.properties.showMovies
       }
     );
     
@@ -154,6 +156,7 @@ export default class ProductPageWebPart extends BaseClientSideWebPart<IProductPa
     if (this.properties.textAlcohol === undefined){this.properties.textAlcohol = "洋酒の種類"}
     if (this.properties.showPicture2 === undefined){this.properties.showPicture2 = false}
     if (this.properties.showSemiProComment === undefined){this.properties.showSemiProComment = true} 
+    if (this.properties.showMovies === undefined){this.properties.showMovies = false}
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
     });
@@ -254,6 +257,7 @@ export default class ProductPageWebPart extends BaseClientSideWebPart<IProductPa
                 PropertyPaneCheckbox('showCakeCut', {text: 'ケーキカットのコツ*'}),
                 PropertyPaneCheckbox('showTopping', {text: 'トッピング*'}),
                 PropertyPaneTextField('textTopping', {placeholder: 'トッピングの仕方'}),
+                PropertyPaneCheckbox('showMovies', {text: 'その他動画'}),
                 PropertyPaneCheckbox('showRemoved', {text: '抜ける食材'}),
                 PropertyPaneCheckbox('showShiage', {text: '仕上げ'}),
                 PropertyPaneCheckbox('showQuestion', {text: 'FAQ'}),

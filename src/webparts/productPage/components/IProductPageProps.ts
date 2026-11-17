@@ -37,6 +37,7 @@ export interface IProductPageProps {
   textAlcohol: string;
   showPicture2: boolean;
   showSemiProComment: boolean;
+  showMovies: boolean;
 }
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 

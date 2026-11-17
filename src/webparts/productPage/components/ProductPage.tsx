@@ -20,6 +20,7 @@ interface IProductPageState {
   glossaryItems: any;
   faqItems: IFaq[];
   imageList: IImageItem[];
+  movieList: IMovieItem[];
 }
 export interface IImageItem {
   Id: number;
@@ -27,7 +28,12 @@ export interface IImageItem {
   Text:string;
   AttachmentFiles: IAttachmentFile[];//Image列が格納される添付ファイル
   ProductPictureURL: string; // 画像の完全パス (例: https://example.com/sites/xxx/Images/pic.jpg)
-
+}
+export interface IMovieItem {
+  Id: number;
+  Title?: string;
+  Text: string;
+  Movie: string;
 }
 export interface IProduct {
   Id: number;
@@ -58,6 +64,8 @@ export interface IProduct {
   showPicture2: boolean;
   PicturesId: number[]; // その他画像のIDリスト
   NewProduct: boolean; // 新商品かどうかのフラグ
+  showMovie2: boolean; //追加の動画を再生するか
+  MoviesId: number[];// 追加の動画のIDリスト
 }
 type GroupedItem = {
   semiProductName: string;
@@ -385,6 +393,23 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
                 </h2>
               </>
             )}
+            {this.props.showMovies && this.state.movieList.length > 0 && (
+              <>
+                <div>
+                  {this.state.movieList.map((movie, index) => (
+                    <div>
+                      <h3 style={{fontSize:"18px",fontWeight: "bold"}}>
+                        {movie?.Text}
+                      </h3>
+                      {/* <img key={index} src={movie.Movie} style={{ width: "100%" }} /> */}
+                      <video width="100%" controls>
+                        <source src={movie.Movie} type="video/mp4" />
+                      </video>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
             {this.props.showRemoved && (
               <>
                 <h2 style={{fontSize:"18px",fontWeight: "bold"}}>
@@ -553,7 +578,8 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
       grouped: [],
       glossaryItems:[],
       faqItems:[],
-      imageList: []
+      imageList: [],
+      movieList: []
     };
     // ✅ sp初期化
     this.sp = spfi("https://shigemitsu365.sharepoint.com/sites/products")
@@ -641,6 +667,7 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
       const cleanHtml = data.CakeCut?.replace(/font-size\s*&#58;\s*[^;"]+;?/gi, "");
       data.CakeCut = cleanHtml ?? data.CakeCut;
       this.setImagesByIds(data.PicturesId?data.PicturesId:[]);
+      this.setMoviePathList(data.MoviesId?data.MoviesId:[]);
       console.log("masterData:",data);
       console.log("PictureURL",data.ProductPictureURL);
       console.log("PageLink",data.ProductPage?.Url);
@@ -798,6 +825,7 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
       console.error("ERROR:", e);
     }
   }
+
   private async setImagesByIds(pictureIds: number[]) {
     // 配列が空の場合は無駄なリクエストを防ぐため空配列を返す
     if (!pictureIds || pictureIds.length === 0) {
@@ -806,20 +834,6 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
 
     // 例: "Id eq 1 or Id eq 2" を作成
     const filterQuery = pictureIds.map(id => `Id eq ${id}`).join(" or ");
-
-    // const images = await this.sp.web.lists.getByTitle("画像ライブラリ").items
-    //   .filter(filterQuery)
-    //   // .select("Id", "FileRef", "FileLeafRef", "Title")();
-    //   .select("Id", "FileRef", "FileLeafRef", "Title","Text")();
-    // console.log("Fetched images:", images);
-    // images.map((image : IImageItem) => {
-    //   const absoluteUrl =`${window.location.origin}${image?.FileRef ?? ""}`;
-    //   console.log("image.FileRef", image?.FileRef ?? "undefined");
-      
-    //   image.ProductPictureURL=absoluteUrl;
-    //   console.log("ProductPictureURL",image.ProductPictureURL);
-    // })
-    // AttachmentFiles を select & expand して取得
     console.log("Fetching images with filter:", filterQuery);
     const images : IImageItem[] = await this.sp.web.lists.getByTitle("画像ライブラリ").items
       .select(
@@ -853,6 +867,27 @@ export default class ProductPage extends React.Component<IProductPageProps , IPr
     this.setState({
       imageList: images as IImageItem[] 
     });
-}
+  }
+  private async setMoviePathList(movieIds: number[]){
+    if (!movieIds || movieIds.length === 0) {
+      return [];
+    }
+    // 例: "Id eq 1 or Id eq 2" を作成
+    const filterQuery = movieIds
+      .map(id => `Id eq ${id}`)
+      .join(" or ");
+    console.log("Fetching Movies with filter:", filterQuery);
+    const files : IMovieItem[] = await this.sp.web.lists
+      .getByTitle("動画ライブラリ")
+      .items
+      .select("Movie")
+      .filter(filterQuery)();  
+    console.log("MovieFilePath:", files);
+    // const paths: string[] = files.map(item => item.Movie);
+    // console.log("MovieFilePaths:", paths);
+    this.setState({
+      movieList: files as IMovieItem[] 
+    });
+  }
 
 }
